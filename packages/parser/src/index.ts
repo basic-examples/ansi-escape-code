@@ -1,0 +1,259 @@
+import { AnsiColor, AnsiString } from "@ansi-escape-code/type";
+
+export interface ParseAnsiStringOptions {
+  flags?: number;
+  foregroundColor?: AnsiColor;
+  backgroundColor?: AnsiColor;
+}
+
+export interface ParseAnsiStringResultOk {
+  success: true;
+  ansiString: AnsiString[];
+  remainFlags: number;
+  remainForegroundColor: AnsiColor;
+  remainBackgroundColor: AnsiColor;
+}
+
+export interface ParseAnsiStringResultError {
+  success: false;
+  error: "unclosed-open-bracket" | ParseAnsiStringFlagsResultError["error"];
+}
+
+export type ParseAnsiStringResult =
+  | ParseAnsiStringResultOk
+  | ParseAnsiStringResultError;
+
+export function parseAnsiString(
+  input: string,
+  {
+    flags: initialFlags = 0,
+    foregroundColor: initialForegroundColor = [5, 0],
+    backgroundColor: initialBackgroundColor = [5, 0],
+  }: ParseAnsiStringOptions = {}
+): ParseAnsiStringResult {
+  let result: AnsiString[] = [];
+  let flags = initialFlags;
+  let foregroundColor = initialForegroundColor;
+  let backgroundColor = initialBackgroundColor;
+  let index = 0;
+  while (index < input.length) {
+    const nextOpen = input.indexOf("\x1b[", index);
+    if (nextOpen === -1) {
+      result.push(
+        new AnsiString(
+          input.slice(index),
+          flags,
+          foregroundColor,
+          backgroundColor
+        )
+      );
+      break;
+    }
+
+    result.push(
+      new AnsiString(
+        input.slice(index, nextOpen),
+        flags,
+        foregroundColor,
+        backgroundColor
+      )
+    );
+    const nextClose = input.indexOf("m", nextOpen);
+    if (nextClose === -1) {
+      return {
+        success: false,
+        error: "unclosed-open-bracket",
+      };
+    }
+
+    const flagsResult = parseAnsiStringFlags(
+      input
+        .slice(nextOpen + 2, nextClose)
+        .split(";")
+        .map(Number),
+      { flags, foregroundColor, backgroundColor }
+    );
+
+    if (!flagsResult.success) {
+      return flagsResult;
+    }
+
+    ({ flags, foregroundColor, backgroundColor } = flagsResult);
+  }
+
+  return {
+    success: true,
+    ansiString: result,
+    remainFlags: flags,
+    remainForegroundColor: foregroundColor,
+    remainBackgroundColor: backgroundColor,
+  };
+}
+
+export interface ParseAnsiStringFlagsResultOk {
+  success: true;
+  flags: number;
+  foregroundColor: AnsiColor;
+  backgroundColor: AnsiColor;
+}
+
+export interface ParseAnsiStringFlagsResultError {
+  success: false;
+  error: "invalid-flags";
+}
+
+export type ParseAnsiStringFlagsResult =
+  | ParseAnsiStringFlagsResultOk
+  | ParseAnsiStringFlagsResultError;
+
+export function parseAnsiStringFlags(
+  input: number[],
+  {
+    flags: initialFlags = 0,
+    foregroundColor: initialForegroundColor = [5, 0],
+    backgroundColor: initialBackgroundColor = [5, 0],
+  }: ParseAnsiStringOptions = {}
+): ParseAnsiStringFlagsResult {
+  if (
+    input.some((flag) => flag < 0 || flag > 255 || Math.floor(flag) !== flag)
+  ) {
+    return { success: false, error: "invalid-flags" };
+  }
+
+  let flags = initialFlags;
+  let foregroundColor = initialForegroundColor;
+  let backgroundColor = initialBackgroundColor;
+
+  let index = 0;
+  let reverse = false;
+
+  while (index < input.length) {
+    const flag = input[index];
+    if (flag === 0) {
+      flags =
+        AnsiString.WEIGHT_NORMAL_BIT |
+        AnsiString.NO_ITALIC_BIT |
+        AnsiString.NO_UNDERLINE_BITS |
+        AnsiString.NO_BLINK_BIT |
+        AnsiString.NO_STRIKE_BIT;
+      foregroundColor = [5, 0];
+      backgroundColor = [5, 0];
+      index++;
+      continue;
+    } else if (flag === 1) {
+      flags = (flags & ~AnsiString.WEIGHT_MASK) | AnsiString.WEIGHT_BOLD_BIT;
+      index++;
+    } else if (flag === 2) {
+      flags = (flags & ~AnsiString.WEIGHT_MASK) | AnsiString.WEIGHT_DIM_BITS;
+      index++;
+    } else if (flag === 3) {
+      flags = (flags & ~AnsiString.ITALIC_MASK) | AnsiString.ITALIC_BIT;
+      index++;
+    } else if (flag === 4) {
+      flags = (flags & ~AnsiString.UNDERLINE_MASK) | AnsiString.UNDERLINE_BIT;
+      index++;
+    } else if (flag === 5 || flag === 6) {
+      flags = (flags & ~AnsiString.BLINK_MASK) | AnsiString.BLINK_BIT;
+      index++;
+    } else if (flag === 7) {
+      reverse = true;
+      index++;
+    } else if (flag === 9) {
+      flags = (flags & ~AnsiString.STRIKE_MASK) | AnsiString.STRIKE_BIT;
+      index++;
+    } else if (flag === 22) {
+      flags = (flags & ~AnsiString.WEIGHT_MASK) | AnsiString.WEIGHT_NORMAL_BIT;
+      index++;
+    } else if (flag === 23) {
+      flags = (flags & ~AnsiString.ITALIC_MASK) | AnsiString.NO_ITALIC_BIT;
+      index++;
+    } else if (flag === 24) {
+      flags =
+        (flags & ~AnsiString.UNDERLINE_MASK) | AnsiString.NO_UNDERLINE_BITS;
+      index++;
+    } else if (flag === 25) {
+      flags = (flags & ~AnsiString.BLINK_MASK) | AnsiString.NO_BLINK_BIT;
+      index++;
+    } else if (flag === 29) {
+      flags = (flags & ~AnsiString.STRIKE_MASK) | AnsiString.NO_STRIKE_BIT;
+      index++;
+    } else if (30 <= flag && flag <= 37) {
+      foregroundColor = [5, flag - 30];
+      index++;
+    } else if (flag === 38) {
+      if (input[index + 1] === 5) {
+        if (
+          input.length < index + 2 ||
+          input[index + 2] < 0 ||
+          input[index + 2] > 255
+        ) {
+          return { success: false, error: "invalid-flags" };
+        }
+        foregroundColor = [5, input[index + 2]];
+        index += 2;
+      } else if (input[index + 1] === 2) {
+        if (
+          input.length < index + 4 ||
+          input[index + 2] < 0 ||
+          input[index + 2] > 255 ||
+          input[index + 3] < 0 ||
+          input[index + 3] > 255 ||
+          input[index + 4] < 0 ||
+          input[index + 4] > 255
+        ) {
+          return { success: false, error: "invalid-flags" };
+        }
+        foregroundColor = [
+          2,
+          input[index + 2],
+          input[index + 3],
+          input[index + 4],
+        ];
+        index += 4;
+      }
+    } else if (flag === 39) {
+      foregroundColor = [5, 0];
+    } else if (40 <= flag && flag <= 47) {
+      backgroundColor = [5, flag - 40];
+      index++;
+    } else if (flag === 48) {
+      if (input[index + 1] === 5) {
+        if (
+          input.length < index + 2 ||
+          input[index + 2] < 0 ||
+          input[index + 2] > 255
+        ) {
+          return { success: false, error: "invalid-flags" };
+        }
+        backgroundColor = [5, input[index + 2]];
+        index += 2;
+      } else if (input[index + 1] === 2) {
+        if (
+          input.length < index + 4 ||
+          input[index + 2] < 0 ||
+          input[index + 2] > 255 ||
+          input[index + 3] < 0 ||
+          input[index + 3] > 255 ||
+          input[index + 4] < 0 ||
+          input[index + 4] > 255
+        ) {
+          return { success: false, error: "invalid-flags" };
+        }
+        backgroundColor = [
+          2,
+          input[index + 2],
+          input[index + 3],
+          input[index + 4],
+        ];
+        index += 4;
+      }
+    } else if (flag === 49) {
+      backgroundColor = [5, 0];
+    } else {
+      flags = flags | AnsiString.UNKNOWN_BIT;
+      index++;
+    }
+  }
+
+  return { success: true, flags, foregroundColor, backgroundColor };
+}

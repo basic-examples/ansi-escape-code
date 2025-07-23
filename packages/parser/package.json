@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "@ansi-escape-code/parser",
+  "version": "0.0.0",
+  "description": "parser for ansi-escape-code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/basic-examples/ansi-escape-code.git",
+    "directory": "packages/parser"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf dist && tsc && cpy README.md dist && package-json-minifier",
+    "publish": "npm run build && cd dist && npm publish",
+    "test": "cd test && npm start"
+  },
+  "dependencies": {
+    "@ansi-escape-code/type": "2.0.0"
+  },
+  "devDependencies": {
+    "cpy-cli": "^5.0.0",
+    "package.json-minifier": "^0.0.4",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  }
+}

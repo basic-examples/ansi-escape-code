@@ -66,12 +66,14 @@ export function parseAnsiString(
       };
     }
 
+    const arr = input.slice(nextOpen + 2, nextClose).split(";");
     const flagsResult = parseAnsiStringFlags(
-      input
-        .slice(nextOpen + 2, nextClose)
-        .split(";")
-        .map(Number),
-      { flags, foregroundColor, backgroundColor }
+      arr.length ? arr.map(Number) : [],
+      {
+        flags,
+        foregroundColor,
+        backgroundColor,
+      }
     );
 
     if (!flagsResult.success) {
@@ -114,6 +116,20 @@ export function parseAnsiStringFlags(
     backgroundColor: initialBackgroundColor = [5, 0],
   }: ParseAnsiStringOptions = {}
 ): ParseAnsiStringFlagsResult {
+  if (!input.length) {
+    return {
+      success: true,
+      flags:
+        AnsiString.WEIGHT_NORMAL_BIT |
+        AnsiString.NO_ITALIC_BIT |
+        AnsiString.NO_UNDERLINE_BITS |
+        AnsiString.NO_BLINK_BIT |
+        AnsiString.NO_STRIKE_BIT,
+      foregroundColor: [5, 0],
+      backgroundColor: [5, 0],
+    };
+  }
+
   if (
     input.some((flag) => flag < 0 || flag > 255 || Math.floor(flag) !== flag)
   ) {
@@ -160,6 +176,10 @@ export function parseAnsiStringFlags(
       index++;
     } else if (flag === 9) {
       flags = (flags & ~AnsiString.STRIKE_MASK) | AnsiString.STRIKE_BIT;
+      index++;
+    } else if (flag === 21) {
+      flags =
+        (flags & ~AnsiString.UNDERLINE_MASK) | AnsiString.DOUBLE_UNDERLINE_BIT;
       index++;
     } else if (flag === 22) {
       flags = (flags & ~AnsiString.WEIGHT_MASK) | AnsiString.WEIGHT_NORMAL_BIT;

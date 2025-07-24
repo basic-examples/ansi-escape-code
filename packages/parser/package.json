@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@ansi-escape-code/parser",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "parser for ansi-escape-code",
   "repository": {
     "type": "git",

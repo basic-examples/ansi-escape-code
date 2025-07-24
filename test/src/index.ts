@@ -1,8 +1,5 @@
-# `ansi-escape-code`
+import { Ansi } from "ansi-escape-code";
 
-Effortless ANSI styling with nesting support
-
-```js
 console.log(
   new Ansi(
     { foregroundColor: [5, 1] },
@@ -11,4 +8,3 @@ console.log(
     " World"
   ).toString()
 );
-```

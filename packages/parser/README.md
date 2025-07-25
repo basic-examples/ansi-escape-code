@@ -1,3 +1,3 @@
 # `@ansi-escape-code/parser`
 
-parser for `ansi-escape-code`
+ANSI Escape Code parser

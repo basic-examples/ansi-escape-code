@@ -1,2 +1,0 @@
-pending unpublished changes:
-- repository field in package.json

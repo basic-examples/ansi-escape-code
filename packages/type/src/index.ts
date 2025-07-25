@@ -1,5 +1,6 @@
 export type AnsiColor =
-  | [basic: 5, color: number]
+  | null // default
+  | [basic8: 5, index: number] // 256 colors
   | [rgb: 2, r: number, g: number, b: number];
 
 export class AnsiString {
@@ -30,11 +31,22 @@ export class AnsiString {
   static readonly STRIKE_BIT = 256; // 1 << 8
   static readonly NO_STRIKE_BIT = 512; // 2 << 8
 
-  static readonly UNKNOWN_BIT = 1024; // 1 << 10
+  static readonly OVERLINE_MASK = 3072; // 3 << 10
+  static readonly OVERLINE_FOLLOW_BITS = 0;
+  static readonly OVERLINE_BIT = 1024; // 1 << 10
+  static readonly NO_OVERLINE_BIT = 2048; // 2 << 10
+
+  static readonly REVERSE_MASK = 6144; // 3 << 12
+  static readonly REVERSE_FOLLOW_BITS = 0;
+  static readonly REVERSE_BIT = 2048; // 1 << 12
+  static readonly NO_REVERSE_BIT = 4096; // 2 << 2
+
+  static readonly UNKNOWN_BIT = 16384; // 1 << 14
 
   constructor(
     public readonly content: string,
     public readonly attributeFlags: number,
+    public readonly underlineColor: AnsiColor,
     public readonly foregroundColor: AnsiColor,
     public readonly backgroundColor: AnsiColor
   ) {}

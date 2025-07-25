@@ -1,8 +1,8 @@
 {
   "private": true,
   "name": "@ansi-escape-code/parser",
-  "version": "0.0.2",
-  "description": "parser for ansi-escape-code",
+  "version": "0.0.3",
+  "description": "ANSI Escape Code parser",
   "repository": {
     "type": "git",
     "url": "https://github.com/basic-examples/ansi-escape-code.git",
@@ -15,7 +15,7 @@
     "test": "cd test && npm start"
   },
   "dependencies": {
-    "@ansi-escape-code/type": "2.0.0"
+    "@ansi-escape-code/type": "^3.0.0"
   },
   "devDependencies": {
     "cpy-cli": "^5.0.0",

@@ -8,6 +8,9 @@ export interface AnsiOptions {
   underline: "none" | "single" | "double";
   blink: boolean;
   strike: boolean;
+  overline: boolean;
+  reverse: boolean;
+  underlineColor: AnsiColor;
   foregroundColor: AnsiColor;
   backgroundColor: AnsiColor;
 }
@@ -19,8 +22,11 @@ export class Ansi {
     underline: "none",
     blink: false,
     strike: false,
-    foregroundColor: [5, 0],
-    backgroundColor: [5, 0],
+    overline: false,
+    reverse: false,
+    underlineColor: null,
+    foregroundColor: null,
+    backgroundColor: null,
   };
 
   public readonly parts: AnsiPart[];
@@ -85,6 +91,14 @@ export class Ansi {
       resolvedInnerOptions.blink !== resolvedOuterOptions.blink;
     const strikeChanged =
       resolvedInnerOptions.strike !== resolvedOuterOptions.strike;
+    const overlineChanged =
+      resolvedInnerOptions.overline !== resolvedOuterOptions.overline;
+    const reverseChanged =
+      resolvedInnerOptions.reverse !== resolvedOuterOptions.reverse;
+    const underlineColorChanged = !Ansi.isSameColor(
+      resolvedInnerOptions.underlineColor,
+      resolvedOuterOptions.underlineColor
+    );
     const foregroundColorChanged = !Ansi.isSameColor(
       resolvedInnerOptions.foregroundColor,
       resolvedOuterOptions.foregroundColor
@@ -122,11 +136,22 @@ export class Ansi {
             : 24),
         blinkChanged && (resolvedInnerOptions.blink ? 5 : 25),
         strikeChanged && (resolvedInnerOptions.strike ? 9 : 29),
+        overlineChanged && (resolvedInnerOptions.overline ? 53 : 55),
+        reverseChanged && (resolvedInnerOptions.reverse ? 7 : 27),
+        ...(underlineColorChanged
+          ? resolvedInnerOptions.underlineColor === null
+            ? [59]
+            : [58, ...resolvedInnerOptions.underlineColor]
+          : []),
         ...(foregroundColorChanged
-          ? [38, ...resolvedInnerOptions.foregroundColor]
+          ? resolvedInnerOptions.foregroundColor === null
+            ? [39]
+            : [38, ...resolvedInnerOptions.foregroundColor]
           : []),
         ...(backgroundColorChanged
-          ? [48, ...resolvedInnerOptions.backgroundColor]
+          ? resolvedInnerOptions.backgroundColor === null
+            ? [49]
+            : [48, ...resolvedInnerOptions.backgroundColor]
           : []),
       ]
         .filter((a) => a)
@@ -148,10 +173,14 @@ export class Ansi {
         blinkChanged && (resolvedOuterOptions.blink ? 5 : 25),
         strikeChanged && (resolvedOuterOptions.strike ? 9 : 29),
         ...(foregroundColorChanged
-          ? [38, ...resolvedOuterOptions.foregroundColor]
+          ? resolvedOuterOptions.foregroundColor === null
+            ? [39]
+            : [38, ...resolvedOuterOptions.foregroundColor]
           : []),
         ...(backgroundColorChanged
-          ? [48, ...resolvedOuterOptions.backgroundColor]
+          ? resolvedOuterOptions.backgroundColor === null
+            ? [49]
+            : [48, ...resolvedOuterOptions.backgroundColor]
           : []),
       ]
         .filter((a) => a)
@@ -160,6 +189,10 @@ export class Ansi {
   }
 
   private static isSameColor(a: AnsiColor, b: AnsiColor): boolean {
+    if (a === null || b === null) {
+      return a === b;
+    }
+
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
   }
 }

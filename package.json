@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "ansi-escape-code",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Effortless ANSI styling with nesting support",
   "repository": {
     "type": "git",
@@ -13,11 +13,16 @@
     "publish": "npm run build && cd dist && npm publish",
     "test": "cd test && npm start"
   },
-  "dependencies": {
-    "@ansi-escape-code/parser": "^0.0.3",
+  "peerDependencies": {
     "@ansi-escape-code/type": "^3.0.0"
   },
+  "peerDependenciesMeta": {
+    "@ansi-escape-code/type": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@types/node": "^24.1.0",
     "cpy-cli": "^5.0.0",
     "package.json-minifier": "^0.0.4",
     "rimraf": "^6.0.1",

@@ -1,4 +1,4 @@
-import { AnsiColor } from "@ansi-escape-code/type";
+import type { AnsiColor } from "@ansi-escape-code/type";
 
 export type AnsiPart = Ansi | { toString(): string };
 
@@ -194,5 +194,64 @@ export class Ansi {
     }
 
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+  }
+
+  public static readonly STANDARD_BLACK: AnsiColor = [5, 0];
+  public static readonly STANDARD_RED: AnsiColor = [5, 1];
+  public static readonly STANDARD_GREEN: AnsiColor = [5, 2];
+  public static readonly STANDARD_YELLOW: AnsiColor = [5, 3];
+  public static readonly STANDARD_BLUE: AnsiColor = [5, 4];
+  public static readonly STANDARD_MAGENTA: AnsiColor = [5, 5];
+  public static readonly STANDARD_CYAN: AnsiColor = [5, 6];
+  public static readonly STANDARD_WHITE: AnsiColor = [5, 7];
+  public static readonly INTENSE_BLACK: AnsiColor = [5, 8];
+  public static readonly INTENSE_RED: AnsiColor = [5, 9];
+  public static readonly INTENSE_GREEN: AnsiColor = [5, 10];
+  public static readonly INTENSE_YELLOW: AnsiColor = [5, 11];
+  public static readonly INTENSE_BLUE: AnsiColor = [5, 12];
+  public static readonly INTENSE_MAGENTA: AnsiColor = [5, 13];
+  public static readonly INTENSE_CYAN: AnsiColor = [5, 14];
+  public static readonly INTENSE_WHITE: AnsiColor = [5, 15];
+
+  public static grayscale(
+    n:
+      | 0
+      | 1
+      | 2
+      | 3
+      | 4
+      | 5
+      | 6
+      | 7
+      | 8
+      | 9
+      | 10
+      | 11
+      | 12
+      | 13
+      | 14
+      | 15
+      | 16
+      | 17
+      | 18
+      | 19
+      | 20
+      | 21
+      | 22
+      | 23
+  ): AnsiColor {
+    return [5, 232 + n];
+  }
+
+  public static basicRGB(
+    r: 0 | 1 | 2 | 3 | 4 | 5,
+    g: 0 | 1 | 2 | 3 | 4 | 5,
+    b: 0 | 1 | 2 | 3 | 4 | 5
+  ): AnsiColor {
+    return [5, 16 + r * 36 + g * 6 + b];
+  }
+
+  public static trueColor(r: number, g: number, b: number): AnsiColor {
+    return [2, r, g, b];
   }
 }

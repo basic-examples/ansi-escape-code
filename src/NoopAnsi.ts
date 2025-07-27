@@ -1,7 +1,7 @@
 import { AnsiOptions, AnsiPart, Ansi as DefaultAnsi } from ".";
 
 export class NoopAnsi extends DefaultAnsi {
-  constructor(_unusedOptions: AnsiOptions, ...parts: AnsiPart[]) {
+  constructor(_unusedOptions: Partial<AnsiOptions>, ...parts: AnsiPart[]) {
     super({}, ...parts);
   }
 

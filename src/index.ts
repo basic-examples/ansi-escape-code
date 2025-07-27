@@ -15,6 +15,11 @@ export interface AnsiOptions {
   backgroundColor: AnsiColor;
 }
 
+export type AnsiTemplateTag = (
+  strings: TemplateStringsArray,
+  ...values: readonly AnsiPart[]
+) => Ansi;
+
 export class Ansi {
   public static readonly defaultOptions: AnsiOptions = {
     weight: "normal",
@@ -213,51 +218,29 @@ export class Ansi {
   public static readonly INTENSE_CYAN: AnsiColor = [5, 14];
   public static readonly INTENSE_WHITE: AnsiColor = [5, 15];
 
-  public static grayscale(
-    n:
-      | 0
-      | 1
-      | 2
-      | 3
-      | 4
-      | 5
-      | 6
-      | 7
-      | 8
-      | 9
-      | 10
-      | 11
-      | 12
-      | 13
-      | 14
-      | 15
-      | 16
-      | 17
-      | 18
-      | 19
-      | 20
-      | 21
-      | 22
-      | 23
-  ): AnsiColor {
+  /**
+   * @param n - Grayscale level (0-23)
+   * @returns Ansi color code
+   */
+  public static GRAYSCALE(n: number): AnsiColor {
     return [5, 232 + n];
   }
 
-  public static basicRGB(
-    r: 0 | 1 | 2 | 3 | 4 | 5,
-    g: 0 | 1 | 2 | 3 | 4 | 5,
-    b: 0 | 1 | 2 | 3 | 4 | 5
-  ): AnsiColor {
+  /**
+   * @param r - Red component (0-5)
+   * @param g - Green component (0-5)
+   * @param b - Blue component (0-5)
+   * @returns Ansi color code
+   */
+  public static BASIC_RGB(r: number, g: number, b: number): AnsiColor {
     return [5, 16 + r * 36 + g * 6 + b];
   }
 
-  public static trueColor(r: number, g: number, b: number): AnsiColor {
+  public static TRUE_COLOR(r: number, g: number, b: number): AnsiColor {
     return [2, r, g, b];
   }
 
-  public static tt(
-    first: Partial<AnsiOptions>
-  ): (strings: TemplateStringsArray, ...values: readonly AnsiPart[]) => Ansi {
+  public static tt(first: Partial<AnsiOptions>): AnsiTemplateTag {
     const options = (first ?? {}) as Partial<AnsiOptions>;
     return (strings: TemplateStringsArray, ...values: AnsiPart[]) => {
       const parts = interleave(strings, values);

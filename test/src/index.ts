@@ -1,8 +1,3 @@
-import { Ansi } from "ansi-escape-code/node";
+import { ansi } from "ansi-escape-code/proxy-node";
 
-console.log(
-  Ansi.tt({ foregroundColor: Ansi.STANDARD_RED })`Hello ${Ansi.tt({
-    foregroundColor: Ansi.STANDARD_GREEN,
-    weight: "bold",
-  })`Beautiful`} World`.toString()
-);
+console.log(ansi.red`Hello ${ansi.green.bold`Beautiful`} World`.toString());

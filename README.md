@@ -3,6 +3,14 @@
 Effortless ANSI styling with nesting support
 
 ```js
+import { ansi } from "ansi-escape-code/proxy";
+
+console.log(ansi.red`Hello ${ansi.green.bold`Beautiful`} World`.toString());
+```
+
+... or if your environment does not support Proxy:
+
+```js
 import { Ansi } from "ansi-escape-code";
 
 console.log(
@@ -30,4 +38,4 @@ function printWithoutAnsiEscape(someAnsiObject: Ansi) {
 
 In most cases, you should avoid printing ANSI escape codes when the target stream is not a TTY.
 
-If this applies to your case, import from `ansi-escape-code/node`; it will handle this automatically.
+If this applies to your case, import from `ansi-escape-code/node` or `ansi-escape-code/proxy-node`; it will handle this automatically.

@@ -6,15 +6,10 @@ Effortless ANSI styling with nesting support
 import { Ansi } from "ansi-escape-code";
 
 console.log(
-  new Ansi(
-    { foregroundColor: Ansi.STANDARD_RED },
-    "Hello ",
-    new Ansi({
-      foregroundColor: Ansi.STANDARD_GREEN,
-      weight: "bold",
-    }, "Beautiful"),
-    " World"
-  ).toString()
+  Ansi.tt({ foregroundColor: Ansi.STANDARD_RED })`Hello ${Ansi.tt({
+    foregroundColor: Ansi.STANDARD_GREEN,
+    weight: "bold",
+  })`Beautiful`} World`.toString()
 );
 ```
 

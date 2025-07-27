@@ -254,4 +254,26 @@ export class Ansi {
   public static trueColor(r: number, g: number, b: number): AnsiColor {
     return [2, r, g, b];
   }
+
+  public static tt(
+    first: Partial<AnsiOptions>
+  ): (strings: TemplateStringsArray, ...values: readonly AnsiPart[]) => Ansi {
+    const options = (first ?? {}) as Partial<AnsiOptions>;
+    return (strings: TemplateStringsArray, ...values: AnsiPart[]) => {
+      const parts = interleave(strings, values);
+      return new this(options, ...parts);
+    };
+  }
+}
+
+function interleave(
+  strings: TemplateStringsArray,
+  values: readonly AnsiPart[]
+): AnsiPart[] {
+  const out: AnsiPart[] = [];
+  for (let i = 0; i < strings.length; i++) {
+    if (strings[i] !== "") out.push(strings[i]);
+    if (i < values.length) out.push(values[i]);
+  }
+  return out;
 }

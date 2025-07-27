@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "ansi-escape-code",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Effortless ANSI styling with nesting support",
   "repository": {
     "type": "git",

@@ -39,7 +39,6 @@ console.log(
   * [`ansi` (Proxy factory)](#ansi-proxy-factory)
     * `AnsiFactory` surface
   * [`NoopAnsi`](#noopansi)
-  * [`internal`](#internal)
 * [Advanced: nesting & option resolution](#advanced-nesting--option-resolution)
 * [TypeScript types](#typescript-types)
 * [FAQ](#faq)
@@ -340,21 +339,6 @@ function printWithoutAnsiEscape(someAnsiObject: Ansi) {
   console.log(new NoopAnsi({}, someAnsiObject).toString());
 }
 ```
-
-<!--
-
-### `internal`
-
-```ts
-export declare function internal(
-  ansi: new (options: Partial<AnsiOptions>, ...parts: AnsiPart[]) => Ansi,
-  options: Partial<AnsiOptions>
-): AnsiTT;
-```
-
-Low-level helper used to implement the `ansi` proxy. Treat it as **internal** unless you really know what you’re doing.
-
--->
 
 ## Advanced: nesting & option resolution
 

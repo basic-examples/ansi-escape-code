@@ -55,7 +55,7 @@ console.log(
 
 ## Install
 
-```bash
+```sh
 npm i ansi-escape-code
 
 # if you use typescript
@@ -392,16 +392,16 @@ type AnsiTT = AnsiFactory & AnsiTemplateTag;
 
 ## FAQ
 
-**Q: Why do I need to call `.toString()`?**
+**Q: Why do I need to call `.toString()`?**  
 A: To make composition easy and avoid magic side effects. You can always delay final rendering until you actually need the string.
 
-**Q: Can I mix plain strings with `Ansi` parts?**
+**Q: Can I mix plain strings with `Ansi` parts?**  
 A: Yes — any object with a `toString()` method (including plain strings) can be interpolated.
 
-**Q: How do I completely disable colors?**
+**Q: How do I completely disable colors?**  
 A: Use `ansi-escape-code/node` / `ansi-escape-code/proxy-node` to automatically strip when not a TTY, or manually wrap with `NoopAnsi` / provide a noop renderer.
 
-**Q: How expensive is nesting?**
+**Q: How expensive is nesting?**  
 A: The library computes minimal transitions between styles. Unless you’re generating **huge** volumes per frame, you’ll be fine.
 
 ## License

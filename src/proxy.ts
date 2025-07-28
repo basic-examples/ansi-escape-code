@@ -231,7 +231,7 @@ export function internal(
         return internal(ansi, { ...options, ...option });
       }
     },
-  }) as AnsiTT;
+  });
 }
 
 export const ansi = internal(Ansi, {});

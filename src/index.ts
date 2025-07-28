@@ -240,8 +240,8 @@ export class Ansi {
     return [2, r, g, b];
   }
 
-  public static tt(first: Partial<AnsiOptions>): AnsiTemplateTag {
-    const options = (first ?? {}) as Partial<AnsiOptions>;
+  public static tt(oprions: Partial<AnsiOptions>): AnsiTemplateTag {
+    const options = (oprions ?? {}) as Partial<AnsiOptions>;
     return (strings: TemplateStringsArray, ...values: AnsiPart[]) => {
       const parts = interleave(strings, values);
       return new this(options, ...parts);

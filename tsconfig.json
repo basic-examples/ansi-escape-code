@@ -9,6 +9,7 @@
     "moduleResolution": "nodenext",
     "outDir": "./dist",
     "declaration": true,
+    "stripInternal": true,
   },
   "include": ["src/**/*.ts"],
 }

@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "excludePrivate": true,
+  "includeVersion": true,
+  "name": "ansi-escape-code",
+  "readme": "typedoc.md",
+  "gitRevision": "main",
+  "exclude": ["node_modules", "dist"]
+}

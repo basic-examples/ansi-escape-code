@@ -8,49 +8,57 @@ import { ansi } from "ansi-escape-code/proxy";
 console.log(ansi.red`Hello ${ansi.green.bold`Beautiful`} World`.toString());
 ```
 
-…or, if your environment does **not** support `Proxy`:
+…or, if your environment does **not** support `Proxy` and/or template tag:
 
 ```js
 import { Ansi } from "ansi-escape-code";
 
 console.log(
-  Ansi.tt({ foregroundColor: Ansi.STANDARD_RED })`Hello ${Ansi.tt({
-    foregroundColor: Ansi.STANDARD_GREEN,
-    weight: "bold",
-  })`Beautiful`} World`.toString()
+  new Ansi(
+    { foregroundColor: Ansi.STANDARD_RED },
+    "Hello ",
+    new Ansi(
+      {
+        foregroundColor: Ansi.STANDARD_GREEN,
+        weight: "bold",
+      },
+      "Beautiful"
+    ),
+    " World"
+  ).toString()
 );
 ```
 
 ## Table of contents
 
-* [Why this library?](#why-this-library)
-* [Install](#install)
-* [Quick start](#quick-start)
-  * [With `Proxy` (recommended)](#with-proxy-recommended)
-  * [Without `Proxy`](#without-proxy)
-* [TTY-aware entry points](#tty-aware-entry-points)
-* [API Reference](#api-reference)
-  * [`Ansi` class](#ansi-class)
-    * [`AnsiOptions`](#ansioptions)
-    * `Ansi.defaultOptions`
-    * Color constants & helpers
-    * `Ansi.tt(options): AnsiTemplateTag`
-    * `toString(resolvedOuterOptions?: AnsiOptions): string`
-  * [`ansi` (Proxy factory)](#ansi-proxy-factory)
-    * `AnsiFactory` surface
-  * [`NoopAnsi`](#noopansi)
-* [Advanced: nesting & option resolution](#advanced-nesting--option-resolution)
-* [TypeScript types](#typescript-types)
-* [FAQ](#faq)
-* [License](#license)
+- [Why this library?](#why-this-library)
+- [Install](#install)
+- [Quick start](#quick-start)
+  - [With `Proxy` (recommended)](#with-proxy-recommended)
+  - [Without `Proxy`](#without-proxy)
+- [TTY-aware entry points](#tty-aware-entry-points)
+- [API Reference](#api-reference)
+  - [`Ansi` class](#ansi-class)
+    - [`AnsiOptions`](#ansioptions)
+    - `Ansi.defaultOptions`
+    - Color constants & helpers
+    - `Ansi.tt(options): AnsiTemplateTag`
+    - `toString(resolvedOuterOptions?: AnsiOptions): string`
+  - [`ansi` (Proxy factory)](#ansi-proxy-factory)
+    - `AnsiFactory` surface
+  - [`NoopAnsi`](#noopansi)
+- [Advanced: nesting & option resolution](#advanced-nesting--option-resolution)
+- [TypeScript types](#typescript-types)
+- [FAQ](#faq)
+- [License](#license)
 
 ## Why this library?
 
-* **True nesting**: Inner styles override just what they change; outer styles are restored automatically.
-* **Zero surprises**: Explicit `toString()` — you choose when to emit escape codes.
-* **Type-safe**: Clear typings for colors, options, and template tags.
-* **Works everywhere**: Use the ergonomic `Proxy` API where supported, or fall back to the class-based API.
-* **TTY-aware entry points**: Automatically strip codes when writing to non-TTY streams (Node.js).
+- **True nesting**: Inner styles override just what they change; outer styles are restored automatically.
+- **Zero surprises**: Explicit `toString()` — you choose when to emit escape codes.
+- **Type-safe**: Clear typings for colors, options, and template tags.
+- **Works everywhere**: Use the ergonomic `Proxy` API where supported, or fall back to the class-based API.
+- **TTY-aware entry points**: Automatically strip codes when writing to non-TTY streams (Node.js).
 
 ## Install
 
@@ -77,17 +85,13 @@ console.log(
 Chaining works exactly as you expect:
 
 ```ts
-console.log(
-  ansi.green.double_underline`important`.toString()
-);
+console.log(ansi.green.double_underline`important`.toString());
 ```
 
 Dynamic colors:
 
 ```ts
-console.log(
-  ansi.color(Ansi.TRUE_COLOR(255, 128, 0)).bold`🔥 Hot!`.toString()
-);
+console.log(ansi.color(Ansi.TRUE_COLOR(255, 128, 0)).bold`🔥 Hot!`.toString());
 ```
 
 ### Without `Proxy`
@@ -107,12 +111,34 @@ const out = red`Hello ${greenBold`Beautiful`} World`.toString();
 console.log(out);
 ```
 
+### Even without Template Tag
+
+Use the constructor directly when tagged templates aren’t an option:
+
+```ts
+import { Ansi } from "ansi-escape-code";
+
+const out = new Ansi(
+  { foregroundColor: Ansi.STANDARD_RED },
+  "Hello ",
+  new Ansi(
+    { foregroundColor: Ansi.STANDARD_GREEN, weight: "bold" },
+    "Beautiful"
+  ),
+  " World"
+).toString();
+
+console.log(out);
+```
+
+This approach is fully compatible with all nesting and formatting behaviors — just more verbose than using `tt()` or the `Proxy` API.
+
 ## TTY-aware entry points
 
 Most CLIs should **avoid** emitting escape codes when the destination stream **is not** a TTY. Use these:
 
-* `ansi-escape-code/node`
-* `ansi-escape-code/proxy-node`
+- `ansi-escape-code/node`
+- `ansi-escape-code/proxy-node`
 
 They behave like their counterparts but will return `NoopAnsi` wrappers (or similar behavior) when `process.stdout.isTTY` or `process.stderr.isTTY` is false.
 
@@ -161,8 +187,8 @@ export interface AnsiOptions {
 }
 ```
 
-* All options are **overridable** at any depth of nesting.
-* Instances store **partial** options; unspecified fields inherit from their parent.
+- All options are **overridable** at any depth of nesting.
+- Instances store **partial** options; unspecified fields inherit from their parent.
 
 #### `Ansi.defaultOptions`
 
@@ -172,14 +198,14 @@ A concrete `AnsiOptions` object providing library defaults (e.g., no formatting,
 
 Predefined color constants:
 
-* `Ansi.STANDARD_*`: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
-* `Ansi.INTENSE_*`: same 8 colors, high-intensity versions
+- `Ansi.STANDARD_*`: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
+- `Ansi.INTENSE_*`: same 8 colors, high-intensity versions
 
 Programmatic helpers:
 
-* `Ansi.GRAYSCALE(n: number)` – *n* ∈ \[0..23]
-* `Ansi.BASIC_RGB(r: number, g: number, b: number)` – each ∈ \[0..5]
-* `Ansi.TRUE_COLOR(r: number, g: number, b: number)` – each ∈ \[0..255]
+- `Ansi.GRAYSCALE(n: number)` – _n_ ∈ \[0..23]
+- `Ansi.BASIC_RGB(r: number, g: number, b: number)` – each ∈ \[0..5]
+- `Ansi.TRUE_COLOR(r: number, g: number, b: number)` – each ∈ \[0..255]
 
 All return an `AnsiColor`.
 
@@ -209,8 +235,8 @@ import { ansi } from "ansi-escape-code/proxy";
 
 `ansi` is both:
 
-* a **template tag**: `` ansi.bold.red`...strings` ``
-* a **chainable factory**: `ansi.color(...).backgroundColor(...).underlineColor(...)...`
+- a **template tag**: `` ansi.bold.red`...strings` ``
+- a **chainable factory**: `ansi.color(...).backgroundColor(...).underlineColor(...)...`
 
 `type AnsiTT = AnsiFactory & AnsiTemplateTag`.
 
@@ -318,12 +344,8 @@ Example:
 
 ```ts
 console.log(
-  ansi
-    .bold
-    .underline
-    .color(ansi.TRUE_COLOR(255, 128, 0))
-    .backgroundBlue`🔥 Warning`
-    .toString()
+  ansi.bold.underline.color(ansi.TRUE_COLOR(255, 128, 0))
+    .backgroundBlue`🔥 Warning`.toString()
 );
 ```
 
@@ -342,9 +364,9 @@ function printWithoutAnsiEscape(someAnsiObject: Ansi) {
 
 ## Advanced: nesting & option resolution
 
-* Every `Ansi` instance carries **partial** options and a list of parts (`AnsiPart[]`) that can themselves be `Ansi` instances or any `{ toString(): string }`.
-* When calling `toString()`, the library determines the **difference** between the currently active style and the child’s requested style, emitting only the necessary escape codes (and resets) at boundaries.
-* This is what enables **deep nesting** without style leakage or unnecessary resets.
+- Every `Ansi` instance carries **partial** options and a list of parts (`AnsiPart[]`) that can themselves be `Ansi` instances or any `{ toString(): string }`.
+- When calling `toString()`, the library determines the **difference** between the currently active style and the child’s requested style, emitting only the necessary escape codes (and resets) at boundaries.
+- This is what enables **deep nesting** without style leakage or unnecessary resets.
 
 ## TypeScript types
 
@@ -366,10 +388,14 @@ export interface AnsiOptions {
   backgroundColor: AnsiColor;
 }
 
-export type AnsiTemplateTag =
-  (strings: TemplateStringsArray, ...values: readonly AnsiPart[]) => Ansi;
+export type AnsiTemplateTag = (
+  strings: TemplateStringsArray,
+  ...values: readonly AnsiPart[]
+) => Ansi;
 
-export interface AnsiFactory { /* see full list above */ }
+export interface AnsiFactory {
+  /* see full list above */
+}
 
 type AnsiTT = AnsiFactory & AnsiTemplateTag;
 ```

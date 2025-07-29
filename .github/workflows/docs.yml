@@ -16,11 +16,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install dependencies
-        run: npm i
-
-      - name: Build docs with TypeDoc
-        run: npm run docs
+      - name: Install dependencies and build docs with TypeDoc
+        run: sh -x docs.sh
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "merge",
+  "entryPoints": ["tmp/docs/*.json"],
+  "out": "docs",
+  "readme": "typedoc.md",
+  "gitRevision": "main",
+  "exclude": ["node_modules", "dist"],
+  "excludePrivate": true,
+  "includeVersion": true,
+}

@@ -9,10 +9,10 @@ This repository is for npm `ansi-escape-code` and `@ansi-escape-code/*` packages
     - `src/`: source code
     - `README.md`: document for typedoc
     - `npm.md`: README.md for npm
-    - `typedoc.json`: typedoc config
+    - `typedoc.jsonc`: typedoc config
 - `src/`: main package (`ansi-escape-code`) source code
 - `README.md`: main package document for typedoc
 - `npm.md`: main package README.md for npm
-- `typedoc.json`: main package typedoc config
-- `typedoc.root.json`: root typedoc config
-- `typedoc.root.md`: root typedoc README.md
+- `typedoc.jsonc`: main package typedoc config
+- `typedoc.root.jsonc`: root typedoc config
+- `typedoc.md`: root typedoc README.md

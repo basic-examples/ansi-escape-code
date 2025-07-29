@@ -8,4 +8,4 @@ import { ansi } from "ansi-escape-code/proxy";
 console.log(ansi.red`Hello ${ansi.green.bold`Beautiful`} World`.toString());
 ```
 
-[API Docs](https://pages.github.io/basic-examples/ansi-escape-code) — hosted separately to reduce npm package size.
+[API Docs](https://basic-examples.github.io/ansi-escape-code) — hosted separately to reduce npm package size.

@@ -1,5 +1,6 @@
 import { AnsiColor, AnsiString } from "@ansi-escape-code/type";
 
+/** Options controlling how ANSI strings are parsed. */
 export interface ParseAnsiStringOptions {
   flags?: number;
   underlineColor?: AnsiColor;
@@ -7,6 +8,7 @@ export interface ParseAnsiStringOptions {
   backgroundColor?: AnsiColor;
 }
 
+/** Successful result returned from {@link parseAnsiString}. */
 export interface ParseAnsiStringResultOk {
   success: true;
   ansiString: AnsiString[];
@@ -16,6 +18,7 @@ export interface ParseAnsiStringResultOk {
   remainBackgroundColor: AnsiColor;
 }
 
+/** Error result returned from {@link parseAnsiString}. */
 export interface ParseAnsiStringResultError {
   success: false;
   error: "unclosed-escape-sequence" | ParseAnsiStringFlagsResultError["error"];
@@ -25,6 +28,9 @@ export type ParseAnsiStringResult =
   | ParseAnsiStringResultOk
   | ParseAnsiStringResultError;
 
+/**
+ * Parses a string containing ANSI escape sequences.
+ */
 export function parseAnsiString(
   input: string,
   {
@@ -100,6 +106,7 @@ export function parseAnsiString(
   };
 }
 
+/** Successful result returned from {@link parseAnsiStringFlags}. */
 export interface ParseAnsiStringFlagsResultOk {
   success: true;
   flags: number;
@@ -108,6 +115,7 @@ export interface ParseAnsiStringFlagsResultOk {
   backgroundColor: AnsiColor;
 }
 
+/** Error result returned from {@link parseAnsiStringFlags}. */
 export interface ParseAnsiStringFlagsResultError {
   success: false;
   error: "invalid-flags";
@@ -117,6 +125,9 @@ export type ParseAnsiStringFlagsResult =
   | ParseAnsiStringFlagsResultOk
   | ParseAnsiStringFlagsResultError;
 
+/**
+ * Parses an array of numeric SGR codes.
+ */
 export function parseAnsiStringFlags(
   input: number[],
   {

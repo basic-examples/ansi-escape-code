@@ -36,6 +36,7 @@ console.log(
 - [Quick start](#quick-start)
   - [With `Proxy` (recommended)](#with-proxy-recommended)
   - [Without `Proxy`](#without-proxy)
+  - [Even Without Template Tag](#even-without-template-tag)
 - [TTY-aware entry points](#tty-aware-entry-points)
 - [API Reference](#api-reference)
   - [`Ansi` class](#ansi-class)

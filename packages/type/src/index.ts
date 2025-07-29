@@ -43,6 +43,9 @@ export class AnsiString {
 
   static readonly UNKNOWN_BIT = 16384; // 1 << 14
 
+  /**
+   * Creates a new {@link AnsiString} instance.
+   */
   constructor(
     public readonly content: string,
     public readonly attributeFlags: number,

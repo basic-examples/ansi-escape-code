@@ -1,7 +1,12 @@
 import type { AnsiColor } from "@ansi-escape-code/type";
 
+/**
+ * Union of parts that can make up an ANSI string. A part can be another
+ * {@link Ansi} instance or any object with a `toString()` method.
+ */
 export type AnsiPart = Ansi | { toString(): string };
 
+/** Options describing how text should be styled. */
 export interface AnsiOptions {
   weight: "normal" | "bold" | "dim";
   italic: boolean;
@@ -15,11 +20,20 @@ export interface AnsiOptions {
   backgroundColor: AnsiColor;
 }
 
+/**
+ * Template tag used to produce nested {@link Ansi} instances.
+ *
+ * @param strings - Raw template string segments.
+ * @param values - Interpolated values to embed.
+ */
 export type AnsiTemplateTag = (
   strings: TemplateStringsArray,
   ...values: readonly AnsiPart[]
 ) => Ansi;
 
+/**
+ * Represents a styled string that can contain nested {@link Ansi} parts.
+ */
 export class Ansi {
   public static readonly defaultOptions: AnsiOptions = {
     weight: "normal",
@@ -36,6 +50,12 @@ export class Ansi {
 
   public readonly parts: AnsiPart[];
 
+  /**
+   * Creates a new instance.
+   *
+   * @param options - Styling options to apply to the contents.
+   * @param parts - Parts that make up the styled output.
+   */
   constructor(
     public readonly options: Partial<AnsiOptions>,
     ...parts: AnsiPart[]
@@ -43,6 +63,11 @@ export class Ansi {
     this.parts = parts;
   }
 
+  /**
+   * Renders this instance and all nested parts to a string.
+   *
+   * @param resolvedOuterOptions - Active options of the parent context.
+   */
   public toString(
     resolvedOuterOptions: AnsiOptions = Ansi.defaultOptions
   ): string {
@@ -236,10 +261,20 @@ export class Ansi {
     return [5, 16 + r * 36 + g * 6 + b];
   }
 
+  /**
+   * Creates a 24 bit true color value.
+   *
+   * @param r - Red component (0-255)
+   * @param g - Green component (0-255)
+   * @param b - Blue component (0-255)
+   */
   public static TRUE_COLOR(r: number, g: number, b: number): AnsiColor {
     return [2, r, g, b];
   }
 
+  /**
+   * Returns a template tag preconfigured with the provided options.
+   */
   public static tt(oprions: Partial<AnsiOptions>): AnsiTemplateTag {
     const options = (oprions ?? {}) as Partial<AnsiOptions>;
     return (strings: TemplateStringsArray, ...values: AnsiPart[]) => {
@@ -249,6 +284,9 @@ export class Ansi {
   }
 }
 
+/**
+ * Interleaves template string segments with their interpolated values.
+ */
 function interleave(
   strings: TemplateStringsArray,
   values: readonly AnsiPart[]

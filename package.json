@@ -9,10 +9,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist && tsc && cpy README.md dist && package-json-minifier",
+    "build": "rimraf dist && tsc && cpy npm.md dist/README.md && package-json-minifier",
     "publish": "npm run build && cd dist && npm publish",
     "test": "cd test && npm start",
-    "docs": "typedoc"
+    "docs": "typedoc --options typedoc.root.json"
   },
   "peerDependencies": {
     "@ansi-escape-code/type": "^3.0.0"

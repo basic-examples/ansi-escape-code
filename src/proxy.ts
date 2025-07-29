@@ -83,7 +83,7 @@ export interface AnsiFactory {
   underlineTrueColor: (r: number, g: number, b: number) => AnsiTT;
 }
 
-type AnsiTT = AnsiFactory & AnsiTemplateTag;
+export type AnsiTT = AnsiFactory & AnsiTemplateTag;
 
 const optionsMap: Record<
   keyof AnsiFactory,
@@ -212,6 +212,13 @@ const optionsMap: Record<
 
 function noop() {}
 
+/**
+ * @param ansi - The Ansi class to use
+ * @param options - The options to use
+ * @returns A AnsiTT proxy factory object
+ *
+ * @internal
+ */
 export function internal(
   ansi: new (options: Partial<AnsiOptions>, ...parts: AnsiPart[]) => Ansi,
   options: Partial<AnsiOptions>

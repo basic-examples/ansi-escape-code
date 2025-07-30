@@ -130,10 +130,6 @@ export class Ansi {
       resolvedInnerOptions.overline !== resolvedOuterOptions.overline;
     const reverseChanged =
       resolvedInnerOptions.reverse !== resolvedOuterOptions.reverse;
-    const underlineColorChanged = !Ansi.isSameColor(
-      resolvedInnerOptions.underlineColor,
-      resolvedOuterOptions.underlineColor
-    );
     const foregroundColorChanged = !Ansi.isSameColor(
       resolvedInnerOptions.foregroundColor,
       resolvedOuterOptions.foregroundColor
@@ -142,6 +138,10 @@ export class Ansi {
       resolvedInnerOptions.backgroundColor,
       resolvedOuterOptions.backgroundColor
     );
+    const underlineColorChanged = !Ansi.isSameColor(
+      resolvedInnerOptions.underlineColor,
+      resolvedOuterOptions.underlineColor
+    );
     const changed =
       weightChanged ||
       italicChanged ||
@@ -149,7 +149,8 @@ export class Ansi {
       blinkChanged ||
       strikeChanged ||
       foregroundColorChanged ||
-      backgroundColorChanged;
+      backgroundColorChanged ||
+      underlineColorChanged;
     if (!changed) {
       return ["", ""];
     }
@@ -173,20 +174,32 @@ export class Ansi {
         strikeChanged && (resolvedInnerOptions.strike ? 9 : 29),
         overlineChanged && (resolvedInnerOptions.overline ? 53 : 55),
         reverseChanged && (resolvedInnerOptions.reverse ? 7 : 27),
-        ...(underlineColorChanged
-          ? resolvedInnerOptions.underlineColor === null
-            ? [59]
-            : [58, ...resolvedInnerOptions.underlineColor]
-          : []),
         ...(foregroundColorChanged
           ? resolvedInnerOptions.foregroundColor === null
             ? [39]
+            : resolvedInnerOptions.foregroundColor[0] === 5 &&
+              resolvedInnerOptions.foregroundColor[1] < 8
+            ? [30 + resolvedInnerOptions.foregroundColor[1]]
+            : resolvedInnerOptions.foregroundColor[0] === 5 &&
+              resolvedInnerOptions.foregroundColor[1] < 16
+            ? [82 + resolvedInnerOptions.foregroundColor[1]]
             : [38, ...resolvedInnerOptions.foregroundColor]
           : []),
         ...(backgroundColorChanged
           ? resolvedInnerOptions.backgroundColor === null
             ? [49]
+            : resolvedInnerOptions.backgroundColor[0] === 5 &&
+              resolvedInnerOptions.backgroundColor[1] < 8
+            ? [40 + resolvedInnerOptions.backgroundColor[1]]
+            : resolvedInnerOptions.backgroundColor[0] === 5 &&
+              resolvedInnerOptions.backgroundColor[1] < 16
+            ? [92 + resolvedInnerOptions.backgroundColor[1]]
             : [48, ...resolvedInnerOptions.backgroundColor]
+          : []),
+        ...(underlineColorChanged
+          ? resolvedInnerOptions.underlineColor === null
+            ? [59]
+            : [58, ...resolvedInnerOptions.underlineColor]
           : []),
       ]
         .filter((a) => a)
@@ -207,15 +220,34 @@ export class Ansi {
             : 24),
         blinkChanged && (resolvedOuterOptions.blink ? 5 : 25),
         strikeChanged && (resolvedOuterOptions.strike ? 9 : 29),
+        overlineChanged && (resolvedOuterOptions.overline ? 53 : 55),
+        reverseChanged && (resolvedOuterOptions.reverse ? 7 : 27),
         ...(foregroundColorChanged
           ? resolvedOuterOptions.foregroundColor === null
             ? [39]
+            : resolvedOuterOptions.foregroundColor[0] === 5 &&
+              resolvedOuterOptions.foregroundColor[1] < 8
+            ? [30 + resolvedOuterOptions.foregroundColor[1]]
+            : resolvedOuterOptions.foregroundColor[0] === 5 &&
+              resolvedOuterOptions.foregroundColor[1] < 16
+            ? [82 + resolvedOuterOptions.foregroundColor[1]]
             : [38, ...resolvedOuterOptions.foregroundColor]
           : []),
         ...(backgroundColorChanged
           ? resolvedOuterOptions.backgroundColor === null
             ? [49]
+            : resolvedOuterOptions.backgroundColor[0] === 5 &&
+              resolvedOuterOptions.backgroundColor[1] < 8
+            ? [40 + resolvedOuterOptions.backgroundColor[1]]
+            : resolvedOuterOptions.backgroundColor[0] === 5 &&
+              resolvedOuterOptions.backgroundColor[1] < 16
+            ? [92 + resolvedOuterOptions.backgroundColor[1]]
             : [48, ...resolvedOuterOptions.backgroundColor]
+          : []),
+        ...(underlineColorChanged
+          ? resolvedOuterOptions.underlineColor === null
+            ? [59]
+            : [58, ...resolvedOuterOptions.underlineColor]
           : []),
       ]
         .filter((a) => a)

@@ -33,6 +33,11 @@ export type AnsiTemplateTag = (
 
 /**
  * Represents a styled string that can contain nested {@link Ansi} parts.
+ *
+ * @example
+ * const a = new Ansi({ foregroundColor: Ansi.STANDARD_RED }, "Hi");
+ * a.toString();
+ * // => "\x1b[31mHi\x1b[39m"
  */
 export class Ansi {
   public static readonly defaultOptions: AnsiOptions = {
@@ -274,6 +279,11 @@ export class Ansi {
 
   /**
    * Returns a template tag preconfigured with the provided options.
+   *
+   * @example
+   * const red = Ansi.tt({ foregroundColor: Ansi.STANDARD_RED });
+   * red`hi`.toString();
+   * // => "\x1b[31mhi\x1b[39m"
    */
   public static tt(oprions: Partial<AnsiOptions>): AnsiTemplateTag {
     const options = (oprions ?? {}) as Partial<AnsiOptions>;

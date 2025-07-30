@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rimraf dist && tsc && cpy npm.md dist/README.md && package-json-minifier",
     "publish": "npm run build && cd dist && npm publish",
-    "test": "cd test && npm start"
+    "test": "cd test && npm start",
+    "doctest": "npm run build && npm --prefix packages/parser run build && npm --prefix packages/type run build && jsdoctest dist/*.js packages/*/dist/*.js"
   },
   "peerDependencies": {
     "@ansi-escape-code/type": "^3.0.0"
@@ -28,6 +29,8 @@
     "package.json-minifier": "^0.0.4",
     "rimraf": "^6.0.1",
     "typedoc": "^0.28.8",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "jsdoctest": "^1.7.1",
+    "mocha": "^10.2.0"
   }
 }

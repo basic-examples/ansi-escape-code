@@ -45,6 +45,11 @@ export class AnsiString {
 
   /**
    * Creates a new {@link AnsiString} instance.
+   *
+   * @example
+   * const s = new AnsiString("hi", 0, null, null, null);
+   * s.content;
+   * // => "hi"
    */
   constructor(
     public readonly content: string,

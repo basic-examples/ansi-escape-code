@@ -2,6 +2,11 @@ import { AnsiOptions, AnsiPart, Ansi as DefaultAnsi } from ".";
 /**
  * Variant of {@link DefaultAnsi} that ignores all styling and simply
  * concatenates the contained parts.
+ *
+ * @example
+ * const a = new NoopAnsi({}, "A", new DefaultAnsi({ foregroundColor: DefaultAnsi.STANDARD_RED }, "B"));
+ * a.toString();
+ * // => "AB"
  */
 
 export class NoopAnsi extends DefaultAnsi {

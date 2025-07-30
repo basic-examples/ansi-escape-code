@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "ansi-escape-code",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Effortless ANSI styling with nesting support",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist && tsc && cpy npm.md dist/README.md && package-json-minifier",
+    "build": "rimraf dist && tsc && cpy npm.md dist --rename=README.md && package-json-minifier",
     "publish": "npm run build && cd dist && npm publish",
     "test": "cd test && npm start"
   },

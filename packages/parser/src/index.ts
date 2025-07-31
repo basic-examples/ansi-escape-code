@@ -30,6 +30,11 @@ export type ParseAnsiStringResult =
 
 /**
  * Parses a string containing ANSI escape sequences.
+ *
+ * @example
+ * const res = parseAnsiString("\x1b[31mred\x1b[39m");
+ * res.ansiString.map(s => s.content).join("");
+ * // => "red"
  */
 export function parseAnsiString(
   input: string,
@@ -127,6 +132,11 @@ export type ParseAnsiStringFlagsResult =
 
 /**
  * Parses an array of numeric SGR codes.
+ *
+ * @example
+ * const res = parseAnsiStringFlags([1, 31]);
+ * res.foregroundColor;
+ * // => [5, 1]
  */
 export function parseAnsiStringFlags(
   input: number[],

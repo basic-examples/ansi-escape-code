@@ -241,4 +241,11 @@ export function internal(
   });
 }
 
+/**
+ * Proxy based factory for styled strings.
+ *
+ * @example
+ * ansi.red`hi`.toString();
+ * // => "\x1b[31mhi\x1b[39m"
+ */
 export const ansi = internal(Ansi, {});

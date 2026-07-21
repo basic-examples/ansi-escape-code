@@ -50,6 +50,7 @@ console.log(
   - [`NoopAnsi`](#noopansi)
 - [Advanced: nesting & option resolution](#advanced-nesting--option-resolution)
 - [TypeScript types](#typescript-types)
+- [Beyond text styling](#beyond-text-styling)
 - [FAQ](#faq)
 - [License](#license)
 
@@ -93,6 +94,13 @@ Dynamic colors:
 
 ```ts
 console.log(ansi.color(Ansi.TRUE_COLOR(255, 128, 0)).bold`🔥 Hot!`.toString());
+```
+
+Every chained style also accepts one value with regular call syntax:
+
+```ts
+const text = "🔥 Hot!";
+console.log(ansi.trueColor(255, 128, 0).bold(text).toString());
 ```
 
 ### Without `Proxy`
@@ -142,6 +150,12 @@ Most CLIs should **avoid** emitting escape codes when the destination stream **i
 - `ansi-escape-code/proxy-node`
 
 They behave like their counterparts but will return `NoopAnsi` wrappers (or similar behavior) when `process.stdout.isTTY` or `process.stderr.isTTY` is false.
+
+## Beyond text styling
+
+This project intentionally focuses on its nestable text-styling DSL. For a
+full ANSI/VT sequence reference, decoder, builder, cursor controls, and terminal
+support matrix, use [Ansicode](https://ansicode.eversources.app/en).
 
 ## API Reference
 
@@ -208,7 +222,8 @@ Programmatic helpers:
 - `Ansi.BASIC_RGB(r: number, g: number, b: number)` – each ∈ \[0..5]
 - `Ansi.TRUE_COLOR(r: number, g: number, b: number)` – each ∈ \[0..255]
 
-All return an `AnsiColor`.
+All return an `AnsiColor`. Invalid or non-integer components throw a
+`RangeError` instead of emitting invalid terminal bytes.
 
 #### `Ansi.tt(options: Partial<AnsiOptions>): AnsiTemplateTag`
 
@@ -237,13 +252,15 @@ import { ansi } from "ansi-escape-code/proxy";
 `ansi` is both:
 
 - a **template tag**: `` ansi.bold.red`...strings` ``
+- a **single-value function**: `ansi.bold.red(value)`
 - a **chainable factory**: `ansi.color(...).backgroundColor(...).underlineColor(...)...`
 
-`type AnsiTT = AnsiFactory & AnsiTemplateTag`.
+`type AnsiTT = AnsiFactory & AnsiTemplateTag & ((part: AnsiPart) => Ansi)`.
 
 #### `AnsiFactory` surface
 
-All of these return another `AnsiTT`, so you can keep chaining and end with a template literal:
+All of these return another `AnsiTT`, so you can keep chaining and end with a
+template literal or a single-value call:
 
 ```ts
 export interface AnsiFactory {

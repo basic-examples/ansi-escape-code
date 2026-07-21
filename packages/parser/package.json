@@ -3,6 +3,8 @@
   "name": "@ansi-escape-code/parser",
   "version": "0.0.3",
   "description": "ANSI Escape Code parser",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/basic-examples/ansi-escape-code.git",
@@ -11,15 +13,14 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist && tsc && cpy npm.md dist --rename=README.md && package-json-minifier",
-    "publish": "npm run build && cd dist && npm publish",
-    "test": "cd test && npm start"
+    "publish": "pnpm run build && cd dist && pnpm publish"
   },
   "dependencies": {
     "@ansi-escape-code/type": "^3.0.0"
   },
   "devDependencies": {
     "cpy-cli": "^5.0.0",
-    "package.json-minifier": "^0.0.4",
+    "package.json-minifier": "^0.0.5",
     "rimraf": "^6.0.1",
     "typedoc": "^0.28.9",
     "typescript": "^5.8.3"

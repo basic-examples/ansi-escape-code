@@ -1,5 +1,6 @@
 import type { AnsiColor } from "@ansi-escape-code/type";
-import { Ansi, AnsiOptions, AnsiPart, AnsiTemplateTag } from ".";
+import type { AnsiOptions, AnsiPart, AnsiTemplateTag } from ".";
+import { Ansi } from ".";
 
 export interface AnsiFactory {
   normal: AnsiTT;
@@ -12,6 +13,8 @@ export interface AnsiFactory {
   no_underline: AnsiTT;
   blink: AnsiTT;
   no_blink: AnsiTT;
+  hidden: AnsiTT;
+  no_hidden: AnsiTT;
   strike: AnsiTT;
   no_strike: AnsiTT;
   overline: AnsiTT;
@@ -83,7 +86,10 @@ export interface AnsiFactory {
   underlineTrueColor: (r: number, g: number, b: number) => AnsiTT;
 }
 
-export type AnsiTT = AnsiFactory & AnsiTemplateTag;
+/** A chainable style that supports both tagged-template and single-value calls. */
+export type AnsiTT = AnsiFactory &
+  AnsiTemplateTag &
+  ((part: AnsiPart) => Ansi);
 
 const optionsMap: Record<
   keyof AnsiFactory,
@@ -99,6 +105,8 @@ const optionsMap: Record<
   no_underline: { underline: "none" },
   blink: { blink: true },
   no_blink: { blink: false },
+  hidden: { hidden: true },
+  no_hidden: { hidden: false },
   strike: { strike: true },
   no_strike: { strike: false },
   overline: { overline: true },
@@ -212,6 +220,10 @@ const optionsMap: Record<
 
 function noop() {}
 
+function isTemplateStringsArray(value: unknown): value is TemplateStringsArray {
+  return Array.isArray(value) && Object.hasOwn(value, "raw");
+}
+
 /**
  * @param ansi - The Ansi class to use
  * @param options - The options to use
@@ -224,8 +236,17 @@ export function internal(
   options: Partial<AnsiOptions>
 ): AnsiTT {
   return new Proxy(noop as unknown as AnsiTT, {
-    apply: (_target, _thisArg, args: Parameters<AnsiTemplateTag>) => {
-      return Ansi.tt.apply(ansi, [options])(...args);
+    apply: (_target, _thisArg, args: unknown[]) => {
+      if (isTemplateStringsArray(args[0])) {
+        return Ansi.tt.apply(ansi, [options])(
+          args[0],
+          ...(args.slice(1) as AnsiPart[])
+        );
+      }
+      if (args.length !== 1) {
+        throw new TypeError("Ansi style calls accept exactly one part");
+      }
+      return new ansi(options, args[0] as AnsiPart);
     },
     get: (_target, prop: keyof AnsiFactory) => {
       const option = optionsMap[prop];

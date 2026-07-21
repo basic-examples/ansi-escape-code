@@ -12,6 +12,7 @@ export interface AnsiOptions {
   italic: boolean;
   underline: "none" | "single" | "double";
   blink: boolean;
+  hidden: boolean;
   strike: boolean;
   overline: boolean;
   reverse: boolean;
@@ -40,6 +41,7 @@ export class Ansi {
     italic: false,
     underline: "none",
     blink: false,
+    hidden: false,
     strike: false,
     overline: false,
     reverse: false,
@@ -83,12 +85,18 @@ export class Ansi {
         underline: this.options.underline,
       }),
       ...(this.options.blink !== undefined && { blink: this.options.blink }),
+      ...(this.options.hidden !== undefined && { hidden: this.options.hidden }),
       ...(this.options.strike !== undefined && { strike: this.options.strike }),
+      ...(this.options.overline !== undefined && { overline: this.options.overline }),
+      ...(this.options.reverse !== undefined && { reverse: this.options.reverse }),
+      ...(this.options.underlineColor !== undefined && {
+        underlineColor: this.options.underlineColor,
+      }),
       ...(this.options.foregroundColor !== undefined && {
         foregroundColor: this.options.foregroundColor,
       }),
       ...(this.options.backgroundColor !== undefined && {
-        backgroundColor: this.options.foregroundColor,
+        backgroundColor: this.options.backgroundColor,
       }),
     };
     const [change, restore] = Ansi.changes(
@@ -119,6 +127,8 @@ export class Ansi {
       resolvedInnerOptions.underline !== resolvedOuterOptions.underline;
     const blinkChanged =
       resolvedInnerOptions.blink !== resolvedOuterOptions.blink;
+    const hiddenChanged =
+      resolvedInnerOptions.hidden !== resolvedOuterOptions.hidden;
     const strikeChanged =
       resolvedInnerOptions.strike !== resolvedOuterOptions.strike;
     const overlineChanged =
@@ -142,7 +152,10 @@ export class Ansi {
       italicChanged ||
       underlineChanged ||
       blinkChanged ||
+      hiddenChanged ||
       strikeChanged ||
+      overlineChanged ||
+      reverseChanged ||
       foregroundColorChanged ||
       backgroundColorChanged ||
       underlineColorChanged;
@@ -166,6 +179,7 @@ export class Ansi {
             ? 21
             : 24),
         blinkChanged && (resolvedInnerOptions.blink ? 5 : 25),
+        hiddenChanged && (resolvedInnerOptions.hidden ? 8 : 28),
         strikeChanged && (resolvedInnerOptions.strike ? 9 : 29),
         overlineChanged && (resolvedInnerOptions.overline ? 53 : 55),
         reverseChanged && (resolvedInnerOptions.reverse ? 7 : 27),
@@ -214,6 +228,7 @@ export class Ansi {
             ? 21
             : 24),
         blinkChanged && (resolvedOuterOptions.blink ? 5 : 25),
+        hiddenChanged && (resolvedOuterOptions.hidden ? 8 : 28),
         strikeChanged && (resolvedOuterOptions.strike ? 9 : 29),
         overlineChanged && (resolvedOuterOptions.overline ? 53 : 55),
         reverseChanged && (resolvedOuterOptions.reverse ? 7 : 27),
@@ -280,6 +295,7 @@ export class Ansi {
    * @returns Ansi color code
    */
   public static GRAYSCALE(n: number): AnsiColor {
+    Ansi.assertIntegerRange(n, 0, 23, "n");
     return [5, 232 + n];
   }
 
@@ -290,6 +306,9 @@ export class Ansi {
    * @returns Ansi color code
    */
   public static BASIC_RGB(r: number, g: number, b: number): AnsiColor {
+    Ansi.assertIntegerRange(r, 0, 5, "r");
+    Ansi.assertIntegerRange(g, 0, 5, "g");
+    Ansi.assertIntegerRange(b, 0, 5, "b");
     return [5, 16 + r * 36 + g * 6 + b];
   }
 
@@ -301,7 +320,21 @@ export class Ansi {
    * @param b - Blue component (0-255)
    */
   public static TRUE_COLOR(r: number, g: number, b: number): AnsiColor {
+    Ansi.assertIntegerRange(r, 0, 255, "r");
+    Ansi.assertIntegerRange(g, 0, 255, "g");
+    Ansi.assertIntegerRange(b, 0, 255, "b");
     return [2, r, g, b];
+  }
+
+  private static assertIntegerRange(
+    value: number,
+    minimum: number,
+    maximum: number,
+    name: string
+  ): void {
+    if (!Number.isInteger(value) || value < minimum || value > maximum) {
+      throw new RangeError(`${name} must be an integer between ${minimum} and ${maximum}`);
+    }
   }
 
   /**

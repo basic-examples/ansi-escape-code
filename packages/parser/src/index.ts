@@ -94,6 +94,7 @@ export function parseAnsiString(
     }
 
     ({ flags, underlineColor, foregroundColor, backgroundColor } = flagsResult);
+    index = nextClose + 1;
   }
 
   return {

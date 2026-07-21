@@ -3,15 +3,19 @@
   "name": "ansi-escape-code",
   "version": "0.0.9",
   "description": "Effortless ANSI styling with nesting support",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/basic-examples/ansi-escape-code.git"
   },
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist && rollup -c && cpy npm.md dist --rename=README.md && package-json-minifier",
-    "publish": "npm run build && cd dist && npm publish",
-    "test": "cd test && npm start"
+    "build": "pnpm --filter @ansi-escape-code/type run build && rimraf dist && rollup -c && cpy npm.md dist --rename=README.md && package-json-minifier",
+    "build:all": "pnpm run build && pnpm --recursive --filter './packages/**' --filter '!@ansi-escape-code/type' run build",
+    "docs": "sh docs.sh",
+    "publish": "pnpm run build && cd dist && pnpm publish",
+    "test": "pnpm run build:all && node --test tests/*.test.cjs"
   },
   "peerDependencies": {
     "@ansi-escape-code/type": "^3.0.0"
@@ -22,12 +26,12 @@
     }
   },
   "devDependencies": {
-    "@ansi-escape-code/type": "^3.0.0",
+    "@ansi-escape-code/type": "workspace:^",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/node": "^24.1.0",
     "cpy-cli": "^5.0.0",
-    "package.json-minifier": "^0.0.4",
+    "package.json-minifier": "^0.0.6",
     "rimraf": "^6.0.1",
     "rollup": "^4.46.2",
     "tslib": "^2.8.1",

@@ -16,5 +16,11 @@ export default {
     dir: "dist",
     format: "cjs",
   },
-  plugins: [terser(), typescript()],
+  plugins: [
+    typescript({
+      tsconfig: "./tsconfig.json",
+      include: ["src/**/*.ts"],
+    }),
+    terser(),
+  ],
 };

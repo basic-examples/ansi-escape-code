@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+
+linkWorkspacePackages: true
+
+minimumReleaseAgeExclude:
+  - package.json-minifier@0.0.5 || 0.0.6

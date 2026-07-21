@@ -36,10 +36,10 @@ export class AnsiString {
   static readonly OVERLINE_BIT = 1024; // 1 << 10
   static readonly NO_OVERLINE_BIT = 2048; // 2 << 10
 
-  static readonly REVERSE_MASK = 6144; // 3 << 12
+  static readonly REVERSE_MASK = 12288; // 3 << 12
   static readonly REVERSE_FOLLOW_BITS = 0;
-  static readonly REVERSE_BIT = 2048; // 1 << 12
-  static readonly NO_REVERSE_BIT = 4096; // 2 << 2
+  static readonly REVERSE_BIT = 4096; // 1 << 12
+  static readonly NO_REVERSE_BIT = 8192; // 2 << 12
 
   static readonly UNKNOWN_BIT = 16384; // 1 << 14
 

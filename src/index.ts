@@ -76,6 +76,13 @@ export class Ansi {
     return this.toStringInternal(resolvedOuterOptions);
   }
 
+  /**
+   * Converts this value to its rendered ANSI string in implicit string contexts.
+   */
+  public [Symbol.toPrimitive](_hint: string): string {
+    return this.toString();
+  }
+
   private toStringInternal(resolvedOuterOptions: AnsiOptions): string {
     const resolvedInnerOptions = {
       ...resolvedOuterOptions,

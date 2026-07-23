@@ -1,7 +1,9 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
+const { inspect } = require("node:util");
 const { Ansi } = require("../dist");
 const { ansi } = require("../dist/proxy");
+const { ansi: nodeAnsi } = require("../dist/proxy-node");
 
 test("renders and restores nested styles", () => {
   assert.equal(
@@ -22,6 +24,17 @@ test("supports single-value calls with the same chainable DSL", () => {
   );
   assert.throws(() => ansi.red(), /exactly one part/);
   assert.throws(() => ansi.red("a", "b"), /exactly one part/);
+});
+
+test("supports primitive string conversion", () => {
+  const value = ansi.red("Error");
+  assert.equal(String(value), value.toString());
+  assert.equal(`${value}`, value.toString());
+});
+
+test("renders Node values through util.inspect.custom", () => {
+  const value = nodeAnsi.red.bold("Error");
+  assert.equal(inspect(value), value.toString());
 });
 
 test("renders background, underline color, reverse, overline, and hidden", () => {

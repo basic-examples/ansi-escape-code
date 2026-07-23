@@ -15,7 +15,7 @@
     "build:all": "pnpm run build && pnpm --recursive --filter './packages/**' --filter '!@ansi-escape-code/type' run build",
     "docs": "sh docs.sh",
     "publish": "pnpm run build && cd dist && pnpm publish",
-    "test": "pnpm run build:all && node --test tests/*.test.cjs"
+    "test": "pnpm run build:all && tsc --project tests/tsconfig.json && node --test tests/*.test.cjs"
   },
   "peerDependencies": {
     "@ansi-escape-code/type": "^3.0.0"

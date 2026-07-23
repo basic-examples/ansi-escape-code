@@ -1,7 +1,10 @@
-import { NoopAnsi } from "./NoopAnsi";
-import { ansi as defaultAnsi, internal } from "./proxy";
+import { Ansi } from "./node";
+import { internal } from "./proxy";
 
-export const ansi =
-  process.stdout.isTTY && process.stderr.isTTY
-    ? defaultAnsi
-    : internal(NoopAnsi, {});
+/**
+ * TTY-aware Proxy styling DSL for Node.js.
+ *
+ * It follows the same TTY and custom-inspection behavior as the Node.js
+ * {@link Ansi} constructor.
+ */
+export const ansi = internal(Ansi, {});
